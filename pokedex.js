@@ -106,7 +106,12 @@ const prompt = require("prompt-sync")();
       console.log("🤝Empate");
     }
   }
-
+//compara snorlax vs machamp en la stat que consideres más relevante para ellos.
+//compara dos pokémon de tu elección en defensa
+//intenta comparar usando una stat que no exista (por ejemplo "fuerza") ¿Que deberia imprimir mi función? verificar que haga exactamente eso
+//En defensa, ya que esta es la que hace que el pokemon reciba menos daño
+//snorlax vs chrizard
+//El mensaje que debe arrojar es stat no valida
   async function pokemonMasFuerte(listaNombres, stat) {
     let mejorNombre = "";
     let mejorValor = -1;
