@@ -1,21 +1,22 @@
 const prompt = require("prompt-sync")();
+
   async function pedirNombre(){
+
     for (let i=0;i<3;i++){
       let nombre=prompt("Escribe Nombre: ").toLowerCase();
-      await buscarPokemon(nombre);
+      let datos = await buscarPokemon(nombre);
+      mostrarFicha(datos);
     }
   }
- 
-    pedirNombre();
 
    async function buscarPokemon(nombre) {
+
      const respuesta = await fetch("https://pokeapi.co/api/v2/pokemon/"+nombre);
      if (!respuesta.ok) {
        console.log("Error:",respuesta.status);
        return null;
      }
      const datos = await respuesta.json();
-     mostrarFicha(datos);
      return datos;
    }
 
@@ -54,12 +55,13 @@ const prompt = require("prompt-sync")();
       console.log(datos.stats[i].stat.name + ":" + datos.stats[i].base_stat);
     }
 
-    for(let i = 0; i<datos.abilities.length; i++)
+    for(let i = 0; i<datos.abilities.length; i++){
       if(datos.abilities[i].is_hidden){
         console.log(datos.abilities[i].ability.name + " oculta");
       }else{
         console.log(datos.abilities[i].ability.name);
       }
+    }
   }
 
   function obtenerStat(datos, nombreStat){
@@ -69,3 +71,57 @@ const prompt = require("prompt-sync")();
       }
     } return null;
   }
+
+  async function compararPokemon(nombre1, nombre2, stat){
+    let pokemon1 = await buscarPokemon(nombre1);
+    let pokemon2 = await buscarPokemon(nombre2);
+
+    if(pokemon1 == null || pokemon2 == null){
+      console.log("No se pueden comparar los pokemón");
+      return;
+    }
+
+    let valor1 = obtenerStat(pokemon1, stat);
+    let valor2 = obtenerStat(pokemon2, stat);
+
+    if(valor1 == null || valor2 == null){
+      console.log("stat no valida");
+      console.log("stat validas: hp, attack, defense, special-attack, special-defense, speed");
+      return;
+    }
+
+    if(valor1 > valor2){
+      console.log("==================");
+      console.log(pokemon1.name + " : " + valor1);
+      console.log(pokemon2.name + " : " + valor1);
+      console.log("==================");
+      console.log("🥇Ganador: " + pokemon1.name + " : " + valor1);
+    }else if(valor2 > valor1){
+      console.log("==================");
+      console.log(pokemon1.name + " : " + valor1);
+      console.log(pokemon2.name + " : " + valor1);
+      console.log("==================");
+      console.log("🥇Ganador: " +pokemon2.name + " : " + valor2);
+    }else{
+      console.log("🤝Empate");
+    }
+  }
+
+  async function main() {
+  console.log("1. Buscar pokemón\n2. Comparar pokemón\n");
+  let opcion = Number (prompt("¿Que quieres hacer?: "))
+    if (opcion == 1) {
+      await pedirNombre();
+    } else if (opcion == 2) {
+
+      let nombre1 = prompt("Nombre de un Pokémon: ").toLowerCase();
+      let nombre2 = prompt("Nombre de otro Pokémon: ").toLowerCase();
+      let stat = prompt("Stat: ").toLowerCase();
+
+      await compararPokemon(nombre1, nombre2, stat);
+
+    } else {
+      console.log("Opción no válida.");
+    }
+  }
+  main();
