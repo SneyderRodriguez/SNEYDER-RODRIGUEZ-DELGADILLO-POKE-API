@@ -19,6 +19,7 @@ async function pokedex() {
    for(i=0; i<datos.abilities.length; i++){
     console.log(datos.abilities[i].ability.name);
    }
+   
 }
 
 pokedex();
