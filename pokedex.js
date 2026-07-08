@@ -107,21 +107,56 @@ const prompt = require("prompt-sync")();
     }
   }
 
-  async function main() {
-  console.log("1. Buscar pokemón\n2. Comparar pokemón\n");
-  let opcion = Number (prompt("¿Que quieres hacer?: "))
-    if (opcion == 1) {
-      await pedirNombre();
-    } else if (opcion == 2) {
+  async function pokemonMasFuerte(listaNombres, stat) {
+    let mejorNombre = "";
+    let mejorValor = -1;
 
-      let nombre1 = prompt("Nombre de un Pokémon: ").toLowerCase();
-      let nombre2 = prompt("Nombre de otro Pokémon: ").toLowerCase();
-      let stat = prompt("Stat: ").toLowerCase();
+    for(let i = 0; i < listaNombres.length; i++){
+      let pokemon = await buscarPokemon(listaNombres[i]);
+      if(pokemon == null){
+        continue;
+      }
 
-      await compararPokemon(nombre1, nombre2, stat);
+      let valor = obtenerStat(pokemon, stat);
+      if(valor == null){
+        continue;
+      }
 
-    } else {
-      console.log("Opción no válida.");
+      if(valor > mejorValor){
+        mejorNombre = pokemon.name;
+        mejorValor = valor;
+      }
     }
+    console.log("El más fuerte en " + stat + " es " + mejorNombre + " con " + mejorValor);
+    return mejorNombre;
+  }
+
+  async function main() {
+    console.log("1. Buscar pokemón\n2. Comparar pokemón\n3. Pokemón más fuerte");
+      let opcion = Number (prompt("¿Que quieres hacer?: "))
+      switch (opcion){
+        case 1:
+          await pedirNombre();
+          break;
+        case 2:
+          let nombre1 = prompt("Nombre de un Pokémon: ").toLowerCase();
+          let nombre2 = prompt("Nombre de otro Pokémon: ").toLowerCase();
+          let stat = prompt("Stat: ").toLowerCase();
+
+          await compararPokemon(nombre1, nombre2, stat);
+          break;
+        case 3:
+          let equipo = ["snorlax", "bulbasaur", "charmander", "squirtle", "meowth", "psyduck"];
+          let mejorAttack = await pokemonMasFuerte(equipo, "attack");
+          let mejorDefensa = await pokemonMasFuerte(equipo, "defense");
+
+          console.log("El más fuerte en defensa es: " + mejorDefensa);
+
+          let datos = await buscarPokemon(mejorAttack);
+          mostrarFicha(datos);
+          break;
+        default:
+          console.log("Opción no válida.");
+      }
   }
   main();
